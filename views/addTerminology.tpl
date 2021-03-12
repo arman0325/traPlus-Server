@@ -64,10 +64,10 @@
                                 </div>
                             </div>
                             <div class="form-group mt-2">
-                                <label for="zh" class="col-sm control-label">CheckBox</label>
-                                <div class="col-sm-10">
-                                    <input type="checkbox" name="box1" value="x"/>
-                                    <label for="box1" class="col-sm control-label">Gen</label>
+                                <label for="zh" class="col-sm control-label">Are you genrate the image:</label>
+                                <div class="col-sm-10 form-check form-switch">
+                                    <input class="form-check-input" type="checkbox" name="checkGenerate" value="True" checked/>
+                                    <label for="box1" class="form-check-label">Generate</label>
                                 </div>
                             </div>
                             <div class="form-group mt-2">

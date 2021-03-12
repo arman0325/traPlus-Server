@@ -11,15 +11,13 @@ import os, sys
 import sqlite3
 import datetime
 from downloadFile import downloadCSV
-
-
 from beaker.middleware import SessionMiddleware
  
-#设置session参数
+
 session_opts = {
-    'session.type':'file',                   # 以文件的方式保存session
-    'session.cookei_expires':3600,       # session过期时间为3600秒
-    'session.data_dir':'/tmp/sessions',  # session存放路径
+    'session.type':'file',                
+    'session.timeout':3600, # login time 1 hour      
+    'session.data_dir':'/tmp/sessions',  
     'sessioni.auto':True
     }
 dictUser = {}
@@ -27,7 +25,7 @@ pw = ''
 
 @error(404)
 def error404(error):
-    return 'Nothing here, sorry'
+    return template('notFound')
 
 #for get file
 @route('/dict/<filename>.css')
@@ -95,13 +93,12 @@ def index():
         return template('index')
 @route('/login')
 def login():
-    return template('views/login')
+    return template('views/login', msg='')
 
 @route('/login', method='POST') 
 def do_login():
-    
-    #client_ip = request.environ.get('REMOTE_ADDR')
-    #print("user IP:",client_ip)
+    timer = datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+    client_ip = request.environ.get('REMOTE_ADDR')
     #print(dictUser)
     username = request.forms.get('username')
     password = request.forms.get('password')
@@ -123,11 +120,13 @@ def do_login():
             s['password'] = password
             s.save()
             dictUser.clear()
+            
+            print("Time: {}, IP: {}".format(timer, client_ip))
             return redirect('/')
         else:
-            return "<p>Your log in attempt has failed</p>"
+            return template('views/login', msg='Sorry, your account or password is wrong!')
     else:
-        return "<p>Your log in attempt has failed</p>"
+        return template('views/login', msg='Sorry, your account or password is wrong!')
     
 
 def checkLogin():
@@ -160,7 +159,7 @@ def showQuestboard():
         return output
         
     else:
-        return '<h1>Please login!</h1>'
+        return template('views/loginMsg')
     
 @route('/process', method='POST')
 def do_process():
@@ -235,7 +234,7 @@ def showTerminology():
         return output
         
     else:
-        return '<h1>Please login!</h1>'
+        return template('views/loginMsg')
     
 @route('/terminologyTest')
 def showTerminologyTest():
@@ -251,18 +250,20 @@ def showTerminologyTest():
         return output
         
     else:
-        return '<h1>Please login!</h1>'    
+        return template('views/loginMsg')
     
 @route('/terminology/add')
 def addForm():    
-    return template('addTerminology')
-
+    if checkLogin():
+        return template('addTerminology')
+    else:
+        return template('views/loginMsg')
 @route('/terminology/add', method="POST")
-def addTerminology():   
+def addTerminology():  
     dateAndTime = datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
     pwd = request.forms.get("confirmPwd")
-    gen = request.forms.get("box1")
-    print(gen)
+    generate = request.forms.getlist('checkGenerate')[0]
+    #print(generate, type(generate))
     ja = request.forms.getunicode('ja')
     zh = request.forms.getunicode('zh')
     s = request.environ.get('beaker.session')
@@ -274,6 +275,10 @@ def addTerminology():
         c.execute("UPDATE modifyTime SET time = :time WHERE page = 'terminology'",{"time":dateAndTime})
         db.commit()
         c.close()
+        if generate == "True":
+            listDir = os.listdir('./simple_images')
+            if ja not in listDir: # check the file in dir
+                downloadImage(ja)
         return redirect('/terminology')
     else:
         return '<h1>error</h1>'
@@ -320,7 +325,7 @@ def showImageFile():
         return output
         
     else:
-        return '<h1>Please login!</h1>'
+        return template('views/loginMsg')
     
 @route('/imageFolder/<filename>')
 def showImage(filename):
@@ -328,7 +333,7 @@ def showImage(filename):
         output = template('views/imageForm', filename=filename)
         return output
     else:
-        return '<h1>Please login!</h1>'
+        return template('views/loginMsg')
     
 @route('/imageFolder/<filename>', method='POST')
 def do_upload(filename):
@@ -358,8 +363,7 @@ def do_upload(filename):
         return redirect('/imageFolder/{}'.format(filename))
     else:
         return "<h1>Failed</h1><a href='/imageFolder/{}'>link</a>".format(filename)
-
-app = default_app()
-app = SessionMiddleware(app, session_opts)
-
-run(app=app, host='0.0.0.0', port=8080, debug=True, reloader=True)
+if __name__ == "__main__":
+    app = default_app()
+    app = SessionMiddleware(app, session_opts)
+    run(app=app, host='0.0.0.0', port=8080, debug=True, reloader=True)
