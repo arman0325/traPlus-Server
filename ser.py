@@ -189,36 +189,10 @@ def Questionnaire(QuestString):
     c.close()
     return template('<h1>This is our getting messaage</h1><b>Tpye: </b>{{Type}}<br><b>Message: </b>{{msg}}<h2>Uploaded to database!</h2>',Type= qType,msg=qMsg)
 
-# @route('/quest')
-# def quest():
-#     return '''
-#         <form action="/quest" method="post">
-#         <B>Type:</B> <input name="qType" type="text" /> <br />
-#         <b>Message:</B> <input name="qMsg" type="text" /> <br />
-#         <input value="Submit" type="submit" />
-#         </form>
-#     ''' 
-
-# @route('/quest', method='POST')
-# def do_quest():
-#     qType = request.forms.get('qType')
-#     qMsg = request.forms.get('qMsg')
-    
-#     db = sqlite3.connect('transPlus.db')
-#     c = db.cursor()
-#     #insert statement
-#     c.execute("INSERT INTO quest (type,message) VALUES (?,?)", (qType,qMsg))
-#     db.commit()
-#     c.close()
-    
-#     return template('<h1>This is our getting messaage</h1><b>Tpye: </b>{{Type}}<br><b>Message: </b>{{msg}}<h2>Uploaded to database!</h2>',Type= qType,msg=qMsg)
-
 @route('/questCollect/<QuestString>')
 def QuestCollect(QuestString):
     li = QuestString.split("&")
     return template('<h1>This is we getting messaage</h1>{{row}}',row = li)
-
-
 
 @route('/terminology')
 def showTerminology():
