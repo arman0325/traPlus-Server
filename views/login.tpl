@@ -33,7 +33,7 @@
 <body class="text-center">
     <main class="form-signin">
         <form action="/login" method="post">
-            <img class="mb-4" src="/dict/logo.png" alt="" width="72" height="57">
+            <img class="mb-4" src="/dict/logo.png" alt="" width="90" height="90">
             <h1 class="h3 mb-3 fw-normal">Log in</h1>
             % if msg!="":
                 <p>{{msg}}</p>
