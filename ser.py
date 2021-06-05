@@ -6,11 +6,10 @@ Created on Wed Feb 24 23:57:13 2021
 """
 
 from bottle import route, run, template,static_file, request, redirect, response,error,default_app
-from down import downloadImage, resizeImgFunc
+from down import downloadImage, resizeImgFunc, downloadCSV
 import os, sys
 import sqlite3
 import datetime
-from downloadFile import downloadCSV
 from beaker.middleware import SessionMiddleware
  
 
@@ -337,6 +336,7 @@ def do_upload(filename):
         return redirect('/imageFolder/{}'.format(filename))
     else:
         return "<h1>Failed</h1><a href='/imageFolder/{}'>link</a>".format(filename)
+        
 if __name__ == "__main__":
     app = default_app()
     app = SessionMiddleware(app, session_opts)
