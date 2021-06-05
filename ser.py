@@ -6,11 +6,10 @@ Created on Wed Feb 24 23:57:13 2021
 """
 
 from bottle import route, run, template,static_file, request, redirect, response,error,default_app
-from down import downloadImage, resizeImgFunc
+from down import downloadImage, resizeImgFunc, downloadCSV
 import os, sys
 import sqlite3
 import datetime
-from downloadFile import downloadCSV
 from beaker.middleware import SessionMiddleware
  
 
